@@ -35,7 +35,7 @@ var wpdp_dateFormat = "mm/dd/yy";
 var wpdp_defaultDate = "";
 var wpdp_changeMonth = false;
 var wpdp_changeYear = false;
-var wpdp_firstDay = "1";
+var wpdp_firstDay = "";
 var wpdp_closeText = "";
 var wpdp_currentText = "";
 var wpdp_minDate = "";
@@ -138,8 +138,6 @@ setTimeout(function(){
 
 				$("#from-date").datepicker( "option", "changeYear", false );
 
-				$("#from-date").datepicker( "option", "firstDay", "1" );
-
 				$("#from-date").datepicker( "option", "showButtonPanel", false );
 
 
@@ -190,7 +188,7 @@ setTimeout(function(){
 
                         $("#from-date").on('click', function(){
 
-                            $('.ui-datepicker-div-wrapper').prop('class', 'ui-datepicker-div-wrapper wp_datepicker_option-1 default');
+                            $('.ui-datepicker-div-wrapper').prop('class', 'ui-datepicker-div-wrapper wp_datepicker_option-1 ');
 
                         });
 
