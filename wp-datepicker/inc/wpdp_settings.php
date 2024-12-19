@@ -315,11 +315,11 @@
             <?php foreach($attrib as $attr): ?>
 
             <?php if(!empty($input) && isset($input[$attr])): ?>
-            <option style="padding-left:20px;" data-type="<?php echo $attr; ?>" value="<?php echo $attr; ?>" <?php selected( $type, $attr ); ?>><?php echo $attr; ?></option>
+            <option style="padding-left:20px;" data-type="<?php echo $attr; ?>" value="<?php echo esc_attr($attr); ?>" <?php selected( $type, $attr ); ?>><?php echo $attr; ?></option>
             <?php foreach($input as $t => $t_array): ?>
             <?php if(is_array($t_array) && !empty($t_array)): ?>
             <?php foreach($t_array as $tag_elem): ?>
-            	<option style="padding-left:40px;" data-tag="<?php echo $tag_type; ?>" data-type="<?php echo $t; ?>" value="<?php echo $tag_elem; ?>" <?php selected( $type, $tag_elem ); ?>><?php echo $tag_elem; ?></option>
+            	<option style="padding-left:40px;" data-tag="<?php echo $tag_type; ?>" data-type="<?php echo $t; ?>" value="<?php echo esc_attr($tag_elem); ?>" <?php selected( $type, $tag_elem ); ?>><?php echo $tag_elem; ?></option>
             <?php endforeach; ?>
         	<?php endif; ?>
             <?php endforeach; ?>
@@ -331,7 +331,7 @@
         </select>
         <?php endif; ?>
         <input name="wpdp_demo_str[]" class="ignore-save" placeholder="" type="text" value="" />
-		<input name="wpdp_demo_output[]" class="ignore-save" type="text" value="<?php echo $vals; ?>" style="width:350px" /><small><?php _e('Insert the output text below and glue with comma for next.', 'wp-datepicker'); ?></small>
+		<input name="wpdp_demo_output[]" class="ignore-save" type="text" value="<?php echo esc_attr($vals); ?>" style="width:350px" /><small><?php _e('Insert the output text below and glue with comma for next.', 'wp-datepicker'); ?></small>
         </div>
 <?php
 		}
@@ -356,9 +356,9 @@ global $wpdp_dir;
 
 
 
-<input type="hidden" id="wp_datepicker_alive_scripts" name="wpdp[<?php echo $current_option ?>][wp_datepicker_alive_scripts]" value="<?php echo $wp_datepicker_alive_scripts; ?>" />
+<input type="hidden" id="wp_datepicker_alive_scripts" name="wpdp[<?php echo $current_option ?>][wp_datepicker_alive_scripts]" value="<?php echo esc_attr($wp_datepicker_alive_scripts); ?>" />
 
-<input type="text" width="100%" value="<?php echo wpdp_slashes($wpdp_selectors); ?>"  name="wpdp[<?php echo $current_option ?>][wp_datepicker]" class="wpdp-useable wpdp_selectors" data-name="[wp_datepicker]" placeholder="<?php _e('Enter', 'wp-datepicker'); ?> id, class, name based and/or type based CSS <?php _e('selector', 'wp-datepicker'); ?>" /><br />
+<input type="text" width="100%" value="<?php echo esc_attr(wpdp_slashes($wpdp_selectors)); ?>"  name="wpdp[<?php echo $current_option ?>][wp_datepicker]" class="wpdp-useable wpdp_selectors" data-name="[wp_datepicker]" placeholder="<?php _e('Enter', 'wp-datepicker'); ?> id, class, name based and/or type based CSS <?php _e('selector', 'wp-datepicker'); ?>" /><br />
 <small>
 <?php _e('You can enter multiple selectors as CSV', 'wp-datepicker'); ?> (<?php _e('Comma Separated Values', 'wp-datepicker'); ?>).<br />
 
@@ -387,7 +387,7 @@ foreach (glob($wpdp_dir."js/i18n/*.js") as $filename) {
 	$code = str_replace(array('datepicker-', '.js'), '', basename($filename));
 	$val = $code.'|'.basename($filename);
 ?>
-	<option value="<?php echo $val; ?>" <?php echo ($wp_datepicker_language==$val?'selected="selected"':''); ?>><?php echo $code.' ('.$title.')'; ?></option>
+	<option value="<?php echo esc_attr($val); ?>" <?php echo ($wp_datepicker_language==$val?'selected="selected"':''); ?>><?php echo $code.' ('.$title.')'; ?></option>
 <?php
 }
 ?>
@@ -420,7 +420,7 @@ foreach (glob($wpdp_dir."js/i18n/*.js") as $filename) {
 <div class="wp_datepicker_months beforeShowDay collapsed">
 <label style="width:100%" for="" title="<?php _e( 'Click here for custom scripts', 'wp-datepicker' ); ?>"><i style="position: relative;top: 2px;left: -2px; font-size:18px;" class="fa fa-code" aria-hidden="true"></i> <?php _e( 'Any other requirements with weekdays?', 'wp-datepicker' ); ?></label>
 <div class="textarea_div">
-<textarea name="wpdp[<?php echo $current_option ?>][wp_datepicker_beforeShowDay]" class="wpdp-useable" data-name="[wp_datepicker_beforeShowDay]" id="wp_datepicker_beforeShowDay" placeholder="<?php _e('Insert your custom code here for beforeShowDay'); ?>"><?php echo $wp_datepicker_beforeShowDay; ?></textarea>
+<textarea name="wpdp[<?php echo $current_option ?>][wp_datepicker_beforeShowDay]" class="wpdp-useable" data-name="[wp_datepicker_beforeShowDay]" id="wp_datepicker_beforeShowDay" placeholder="<?php _e('Insert your custom code here for beforeShowDay'); ?>"><?php echo esc_attr($wp_datepicker_beforeShowDay); ?></textarea>
 <?php
 	$scripts_arr = array(
 		array(
@@ -528,7 +528,7 @@ function (date) {
 <?php if(!empty($scripts_arr)): ?>
 <select name="custom-scripts">
 <?php foreach($scripts_arr as $script_key => $script_val): ?>
-<option value="<?php echo $script_key; ?>"><?php echo $script_val['title']; ?></option>
+<option value="<?php echo esc_attr($script_key); ?>"><?php echo $script_val['title']; ?></option>
 <?php endforeach; ?>
 </select>
 <?php endif; ?>
@@ -726,9 +726,9 @@ function (date) {
     jQuery(document).ready(function($) {
 
 
-        <?php if(isset($_GET['t'])): ?>
+        <?php if(isset($_GET['t']) && is_numeric($_GET['t'])): ?>
 
-        $('.nav-tab-wrapper .nav-tab:nth-child(<?php echo $_GET['t']+1; ?>)').click();
+        $('.nav-tab-wrapper .nav-tab:nth-child(<?php echo esc_attr($_GET['t'])+1; ?>)').click();
 
         <?php endif; ?>
 

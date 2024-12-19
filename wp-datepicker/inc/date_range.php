@@ -58,11 +58,11 @@
 				$wpdp_range_status = array_key_exists('status', $wpdp_range_this)?$wpdp_range_this['status']:'';
 ?>
 <tr class="wpdp-range-<?php echo ($wpdp_range_status?'enabled':'disabled'); ?> wpdp-range-wrapper">
-<td><input type="text" value="<?php echo $main_selector; ?>" readonly /> <a class="linkage linked"><i class="fas fa-link"></i></a> 
+<td><input type="text" value="<?php echo esc_attr($main_selector); ?>" readonly /> <a class="linkage linked"><i class="fas fa-link"></i></a> 
 <select name="wpdp_range[<?php echo $selector_date_range; ?>][target]">
 <?php foreach($all_selectors as $selector_sub => $selector){ $selector_sub_range = 'wpdp-date-range-'.$selector_sub; ?>	
 <?php if($selector_date_range!=$selector_sub_range){ ?>
-	<option value="<?php echo $selector_sub_range; ?>" <?php selected($wpdp_range_target==$selector_sub_range); ?>><?php echo $selector; ?></option>
+	<option value="<?php echo esc_attr($selector_sub_range); ?>" <?php selected($wpdp_range_target==$selector_sub_range); ?>><?php echo $selector; ?></option>
 <?php } ?>    
 <?php } ?>    
 </select>

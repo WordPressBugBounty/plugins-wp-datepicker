@@ -3,7 +3,7 @@
 Plugin Name: WP Datepicker
 Plugin URI: http://androidbubble.com/blog/wordpress/plugins/wp-datepicker
 Description: WP Datepicker is a great plugin to implement custom styled jQuery UI datepicker site-wide. You can set background images and manage CSS from your theme.
-Version: 2.1.3
+Version: 2.1.4
 Author: Fahad Mahmood
 Author URI: https://www.androidbubbles.com
 Text Domain: wp-datepicker
@@ -24,7 +24,7 @@ This WordPress Plugin is free software: you can redistribute it and/or modify it
 	$wpdp_url = plugin_dir_url( __FILE__ );
 	$rendered = FALSE;
 	$wpdp_pro = file_exists($wpdp_dir.'pro/wp-datepicker-pro.php');
-	$wpdp_data = get_plugin_data(__FILE__);
+	$wpdp_data = get_plugin_data(__FILE__, true, false);
 	$wpdp_premium_link = 'https://shop.androidbubbles.com/product/wp-datepicker-pro';//https://shop.androidbubble.com/products/wordpress-plugin?variant=36439508287643';//
 	
 	$HTTP_HOST = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (string)parse_url(get_option('siteurl'), PHP_URL_HOST);
@@ -48,7 +48,7 @@ This WordPress Plugin is free software: you can redistribute it and/or modify it
 		'defaultDate'=>'text'
 	);
 		
-	$wpdp_data = get_plugin_data(__FILE__);
+
 	
 	$wpdp_styles = array('faizan-e-madina', 'll-skin-melon', 'll-skin-latoja', 'll-skin-santiago', 'll-skin-lugo', 'll-skin-cangas', 'll-skin-vigo', 'll-skin-nigran', 'll-skin-siena', 'wp-mechanic');//, 'custom-colors');
 	

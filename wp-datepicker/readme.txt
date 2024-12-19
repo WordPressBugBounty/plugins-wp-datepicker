@@ -3,7 +3,7 @@ Contributors: fahadmahmood, invoicepress
 Tags: datepicker, jquery-ui, html datepicker, date selection
 Requires at least: 3.0.1
 Tested up to: 6.6
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 Requires PHP: 7.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -182,6 +182,8 @@ It's better to post on support forum but if you need it be fixed on urgent basis
 14. Recommended plugins.
 
 == Changelog ==
+= 2.1.4 =
+* Fix: WordPress sanitization and/or escaping functions before saving user input data to the database and when displaying it on output. [12/11/2024][Thanks to Tiffany T. Customer Support Engineer / wordfence.com | defiant.com + vgo0]
 = 2.1.2 =
 * Fix: Cross Site Scripting (XSS) vulnerability and Broken Access Control vulnerability. [21/08/2024][Thanks to Mika & Darius Sveikauskas | patchstack.com]
 = 2.1.1 =
@@ -371,6 +373,8 @@ It's better to post on support forum but if you need it be fixed on urgent basis
 * Initial Commit
 
 == Upgrade Notice ==
+= 2.1.4 =
+Fix: WordPress sanitization and/or escaping functions before saving user input data to the database and when displaying it on output.
 = 2.1.2 =
 Fix: Cross Site Scripting (XSS) vulnerability and Broken Access Control vulnerability.
 = 2.1.1 =
