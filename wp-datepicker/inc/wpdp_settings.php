@@ -264,11 +264,11 @@
 
     <div class="wpdp_settings_fields">
 <?php if($wpdp_pro): ?>
-<a class="delete_wpdp" href="<?php echo admin_url('/options-general.php?page=wp_dp&wpdp_delete_option='.$current_option) ?>" style="text-decoration: none;"><i class="far fa-trash-alt"></i> <?php _e( 'Delete', 'wp-datepicker' ); ?></a>
+<a class="delete_wpdp" href="<?php echo admin_url('/options-general.php?page=wp_dp&wpdp_delete_option='.esc_attr($current_option)); ?>" style="text-decoration: none;"><i class="far fa-trash-alt"></i> <?php _e( 'Delete', 'wp-datepicker' ); ?></a>
         <?php endif; ?>
 
 <span title="<?php _e('Click here to keep scripts alive if your forms are making changes in fields', 'wp-datepicker'); ?>" class="alive_wpdp <?php echo ($wp_datepicker_alive_scripts=='yes'?'awake':''); ?>">
-    <a href="" data-id="<?php echo $current_option; ?>"><i class="fas fa-robot"></i> <?php _e( 'Alive Scripts', 'wp-datepicker' ); ?></a>
+    <a href="" data-id="<?php echo esc_attr($current_option); ?>"><i class="fas fa-robot"></i> <?php _e( 'Alive Scripts', 'wp-datepicker' ); ?></a>
 </span>
         
 <span class="refresh_wpdp">
@@ -356,9 +356,9 @@ global $wpdp_dir;
 
 
 
-<input type="hidden" id="wp_datepicker_alive_scripts" name="wpdp[<?php echo $current_option ?>][wp_datepicker_alive_scripts]" value="<?php echo esc_attr($wp_datepicker_alive_scripts); ?>" />
+<input type="hidden" id="wp_datepicker_alive_scripts" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_alive_scripts]" value="<?php echo esc_attr($wp_datepicker_alive_scripts); ?>" />
 
-<input type="text" width="100%" value="<?php echo esc_attr(wpdp_slashes($wpdp_selectors)); ?>"  name="wpdp[<?php echo $current_option ?>][wp_datepicker]" class="wpdp-useable wpdp_selectors" data-name="[wp_datepicker]" placeholder="<?php _e('Enter', 'wp-datepicker'); ?> id, class, name based and/or type based CSS <?php _e('selector', 'wp-datepicker'); ?>" /><br />
+<input type="text" width="100%" value="<?php echo esc_attr(wpdp_slashes($wpdp_selectors)); ?>"  name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker]" class="wpdp-useable wpdp_selectors" data-name="[wp_datepicker]" placeholder="<?php _e('Enter', 'wp-datepicker'); ?> id, class, name based and/or type based CSS <?php _e('selector', 'wp-datepicker'); ?>" /><br />
 <small>
 <?php _e('You can enter multiple selectors as CSV', 'wp-datepicker'); ?> (<?php _e('Comma Separated Values', 'wp-datepicker'); ?>).<br />
 
@@ -374,7 +374,7 @@ and<br />
 <br />
 <br />
 
-<select name="wpdp[<?php echo $current_option ?>][wp_datepicker_language]" class="wpdp-useable wpdp_selectors" data-name="[wp_datepicker_language]">
+<select name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_language]" class="wpdp-useable wpdp_selectors" data-name="[wp_datepicker_language]">
 <option><?php _e('Select Language', 'wp-datepicker'); ?></option>
 <?php
 foreach (glob($wpdp_dir."js/i18n/*.js") as $filename) {
@@ -398,29 +398,29 @@ foreach (glob($wpdp_dir."js/i18n/*.js") as $filename) {
 
 <div class="wp_datepicker_readyonly">
 <label for=""><?php _e( 'Make datepicker field editable or readonly?', 'wp-datepicker' ); ?></label>
-<input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_readonly]" class="wpdp-useable" data-name="[wp_datepicker_readonly]" id="wp_datepicker_readonly_yes" value="1" <?php checked($wp_datepicker_readonly); ?> /><label for="wp_datepicker_readonly_yes"><?php _e('Read-only', 'wp-datepicker'); ?></label>
-<input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_readonly]" class="wpdp-useable" data-name="[wp_datepicker_readonly]" id="wp_datepicker_readonly_no" value="0" <?php checked(!$wp_datepicker_readonly); ?> /><label for="wp_datepicker_readonly_no"><?php _e('Editable', 'wp-datepicker'); ?></label>
+<input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_readonly]" class="wpdp-useable" data-name="[wp_datepicker_readonly]" id="wp_datepicker_readonly_yes" value="1" <?php checked($wp_datepicker_readonly); ?> /><label for="wp_datepicker_readonly_yes"><?php _e('Read-only', 'wp-datepicker'); ?></label>
+<input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_readonly]" class="wpdp-useable" data-name="[wp_datepicker_readonly]" id="wp_datepicker_readonly_no" value="0" <?php checked(!$wp_datepicker_readonly); ?> /><label for="wp_datepicker_readonly_no"><?php _e('Editable', 'wp-datepicker'); ?></label>
 </div>
 
 
 <div class="wp_datepicker_months">
 <label for=""><?php _e( 'Weekends?', 'wp-datepicker' ); ?></label>
-<input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_weekends]" class="wpdp-useable" data-name="[wp_datepicker_weekends]" id="wp_datepicker_weekends_yes" value="0" <?php checked(!$wp_datepicker_weekends); ?> /><label for="wp_datepicker_weekends_yes"><?php _e('Enable', 'wp-datepicker'); ?></label>
-<input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_weekends]" class="wpdp-useable" data-name="[wp_datepicker_weekends]" id="wp_datepicker_weekends_no" value="1" <?php checked($wp_datepicker_weekends); ?> /><label for="wp_datepicker_weekends_no"><?php _e('Disable', 'wp-datepicker'); ?></label>
+<input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_weekends]" class="wpdp-useable" data-name="[wp_datepicker_weekends]" id="wp_datepicker_weekends_yes" value="0" <?php checked(!$wp_datepicker_weekends); ?> /><label for="wp_datepicker_weekends_yes"><?php _e('Enable', 'wp-datepicker'); ?></label>
+<input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_weekends]" class="wpdp-useable" data-name="[wp_datepicker_weekends]" id="wp_datepicker_weekends_no" value="1" <?php checked($wp_datepicker_weekends); ?> /><label for="wp_datepicker_weekends_no"><?php _e('Disable', 'wp-datepicker'); ?></label>
 <small><?php echo __( 'Will remove Saturdays & Sundays from date picker.', 'wp-datepicker').' '.__("Some service businesses don't offer weekend service.", 'wp-datepicker' ); ?></small>
 </div>
 
 <div class="wp_datepicker_months">
     <label for=""><?php _e( 'Auto Complete?', 'wp-datepicker' ); ?></label>
-    <input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_autocomplete]" class="wpdp-useable" data-name="[wp_datepicker_autocomplete]" id="wp_datepicker_autocomplete_yes" value="1" <?php checked($wp_datepicker_autocomplete); ?> /><label for="wp_datepicker_autocomplete_yes"><?php _e('Enable', 'wp-datepicker'); ?></label>
-    <input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_autocomplete]" class="wpdp-useable" data-name="[wp_datepicker_autocomplete]" id="wp_datepicker_autocomplete_no" value="0" <?php checked(!$wp_datepicker_autocomplete); ?> /><label for="wp_datepicker_autocomplete_no"><?php _e('Disable', 'wp-datepicker'); ?></label>
+    <input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_autocomplete]" class="wpdp-useable" data-name="[wp_datepicker_autocomplete]" id="wp_datepicker_autocomplete_yes" value="1" <?php checked($wp_datepicker_autocomplete); ?> /><label for="wp_datepicker_autocomplete_yes"><?php _e('Enable', 'wp-datepicker'); ?></label>
+    <input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_autocomplete]" class="wpdp-useable" data-name="[wp_datepicker_autocomplete]" id="wp_datepicker_autocomplete_no" value="0" <?php checked(!$wp_datepicker_autocomplete); ?> /><label for="wp_datepicker_autocomplete_no"><?php _e('Disable', 'wp-datepicker'); ?></label>
 </div>
 
 <?php if($wpdp_pro){ ?>
 <div class="wp_datepicker_months beforeShowDay collapsed">
 <label style="width:100%" for="" title="<?php _e( 'Click here for custom scripts', 'wp-datepicker' ); ?>"><i style="position: relative;top: 2px;left: -2px; font-size:18px;" class="fa fa-code" aria-hidden="true"></i> <?php _e( 'Any other requirements with weekdays?', 'wp-datepicker' ); ?></label>
 <div class="textarea_div">
-<textarea name="wpdp[<?php echo $current_option ?>][wp_datepicker_beforeShowDay]" class="wpdp-useable" data-name="[wp_datepicker_beforeShowDay]" id="wp_datepicker_beforeShowDay" placeholder="<?php _e('Insert your custom code here for beforeShowDay'); ?>"><?php echo esc_attr($wp_datepicker_beforeShowDay); ?></textarea>
+<textarea name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_beforeShowDay]" class="wpdp-useable" data-name="[wp_datepicker_beforeShowDay]" id="wp_datepicker_beforeShowDay" placeholder="<?php _e('Insert your custom code here for beforeShowDay'); ?>"><?php echo esc_attr($wp_datepicker_beforeShowDay); ?></textarea>
 <?php
 	$scripts_arr = array(
 		array(
@@ -549,8 +549,8 @@ function (date) {
 
 <div class="wp_datepicker_months">
 <label><?php _e( 'Need months in full or short?', 'wp-datepicker' ); ?></label>
-<input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_months]" class="wpdp-useable" data-name="[wp_datepicker_months]" id="wp_datepicker_months_yes" value="1" <?php checked($wp_datepicker_months); ?> /><label for="wp_datepicker_months_yes"><?php _e('Short', 'wp-datepicker'); ?></label>
-<input type="radio" name="wpdp[<?php echo $current_option ?>][wp_datepicker_months]" class="wpdp-useable" data-name="[wp_datepicker_months]" id="wp_datepicker_months_no" value="0" <?php checked(!$wp_datepicker_months); ?> /><label for="wp_datepicker_months_no"><?php _e('Full', 'wp-datepicker'); ?></label>
+<input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_months]" class="wpdp-useable" data-name="[wp_datepicker_months]" id="wp_datepicker_months_yes" value="1" <?php checked($wp_datepicker_months); ?> /><label for="wp_datepicker_months_yes"><?php _e('Short', 'wp-datepicker'); ?></label>
+<input type="radio" name="wpdp[<?php echo esc_attr($current_option); ?>][wp_datepicker_months]" class="wpdp-useable" data-name="[wp_datepicker_months]" id="wp_datepicker_months_no" value="0" <?php checked(!$wp_datepicker_months); ?> /><label for="wp_datepicker_months_no"><?php _e('Full', 'wp-datepicker'); ?></label>
 <small><?php echo __( 'e.g.', 'wp-datepicker').' Sep '.__('or September?', 'wp-datepicker' ); ?></small>
 </div>
 

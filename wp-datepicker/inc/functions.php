@@ -996,13 +996,13 @@ setTimeout(function(){
 						case 'text':
 						?>
                 
-                <input id="<?php echo $item; ?>" type="text" value="<?php echo isset($$item) ? esc_attr($$item) : '';  ?>" name="wpdp[<?php echo $current_option ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="http://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
+                <input id="<?php echo $item; ?>" type="text" value="<?php echo isset($$item) ? esc_attr($$item) : '';  ?>" name="wpdp[<?php echo esc_attr($current_option); ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="http://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
                 <?php
 						break;
 						case 'checkbox':
 						?>
                 
-                <input id="<?php echo $item; ?>" type="checkbox" value="1" <?php echo (isset($$item) && $$item == 1)?'checked':''; ?> name="wpdp[<?php echo $current_option ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="http://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
+                <input id="<?php echo $item; ?>" type="checkbox" value="1" <?php echo (isset($$item) && $$item == 1)?'checked':''; ?> name="wpdp[<?php echo esc_attr($current_option); ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="http://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
                 <?php
 						break;						
 					}

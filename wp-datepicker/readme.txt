@@ -3,7 +3,7 @@ Contributors: fahadmahmood, invoicepress
 Tags: datepicker, jquery-ui, html datepicker, date selection
 Requires at least: 3.0.1
 Tested up to: 6.6
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 Requires PHP: 7.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
