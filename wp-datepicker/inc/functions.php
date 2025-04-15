@@ -530,6 +530,8 @@ function wpdp_refresh_<?php echo $dp_option_id ?>($, force){
 			
 ?>
 if(typeof wpdp_obj!='undefined'){
+			if (typeof wpdp_obj === 'undefined' || !wpdp_obj.wpml_current_language) return;
+
 	
 			var wpml_code = wpdp_obj.wpml_current_language;
 			

@@ -3,7 +3,7 @@
 Plugin Name: WP Datepicker
 Plugin URI: http://androidbubble.com/blog/wordpress/plugins/wp-datepicker
 Description: WP Datepicker is a great plugin to implement custom styled jQuery UI datepicker site-wide. You can set background images and manage CSS from your theme.
-Version: 2.1.5
+Version: 2.1.6
 Author: Fahad Mahmood
 Author URI: https://www.androidbubbles.com
 Text Domain: wp-datepicker
