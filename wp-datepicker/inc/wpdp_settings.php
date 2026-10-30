@@ -8,7 +8,16 @@
 
     if(isset($_GET['wpdp_delete_option']) && $wpdp_pro){
 
-        delete_option($_GET['wpdp_delete_option']);
+        $wpdp_delete_option = sanitize_text_field(wp_unslash($_GET['wpdp_delete_option']));
+
+        if(
+            current_user_can('manage_options')
+            && isset($_GET['_wpnonce'])
+            && wp_verify_nonce($_GET['_wpnonce'], 'wpdp_delete_option')
+            && wpdp_is_valid_instance_name($wpdp_delete_option)
+        ){
+            delete_option($wpdp_delete_option);
+        }
 
         ?>
 
@@ -98,9 +107,9 @@
                 $option_name = current(array_keys($wpdp_data_post));
                 $options_data_array = current($wpdp_data_post);
 
-                if(strlen($option_name)){
+                if(strlen($option_name) && wpdp_is_valid_instance_name($option_name) && is_array($options_data_array)){
 
-                    update_option( esc_attr($option_name), $options_data_array);
+                    update_option( $option_name, wpdp_validate_instance_values($options_data_array));
 
                 }
 
@@ -149,6 +158,11 @@
         $current_option = sanitize_wpdp_data($_POST['wpdp_get_selected_datepicker']);
         $wpdp_ajax_request = true;
 
+        if(!wpdp_is_valid_instance_name($current_option)){
+            $current_option = wpdp_get_current_option_name();
+            $wpdp_ajax_request = false;
+        }
+
 
     }else{
 
@@ -182,7 +196,7 @@
 
 
 
-	extract($wpdp_options_data_copy);
+	extract(wpdp_extractable($wpdp_options_data_copy));
 
     $wpdp_selectors = $wp_datepicker;
     $wp_datepicker_language = wpdp_slashes($wp_datepicker_language);
@@ -264,7 +278,7 @@
 
     <div class="wpdp_settings_fields">
 <?php if($wpdp_pro): ?>
-<a class="delete_wpdp" href="<?php echo admin_url('/options-general.php?page=wp_dp&wpdp_delete_option='.esc_attr($current_option)); ?>" style="text-decoration: none;"><i class="far fa-trash-alt"></i> <?php _e( 'Delete', 'wp-datepicker' ); ?></a>
+<a class="delete_wpdp" href="<?php echo esc_url(wp_nonce_url(admin_url('/options-general.php?page=wp_dp&wpdp_delete_option='.rawurlencode($current_option)), 'wpdp_delete_option')); ?>" style="text-decoration: none;"><i class="far fa-trash-alt"></i> <?php _e( 'Delete', 'wp-datepicker' ); ?></a>
         <?php endif; ?>
 
 <span title="<?php _e('Click here to keep scripts alive if your forms are making changes in fields', 'wp-datepicker'); ?>" class="alive_wpdp <?php echo ($wp_datepicker_alive_scripts=='yes'?'awake':''); ?>">
@@ -387,7 +401,7 @@ foreach (glob($wpdp_dir."js/i18n/*.js") as $filename) {
 	$code = str_replace(array('datepicker-', '.js'), '', basename($filename));
 	$val = $code.'|'.basename($filename);
 ?>
-	<option value="<?php echo esc_attr($val); ?>" <?php echo ($wp_datepicker_language==$val?'selected="selected"':''); ?>><?php echo $code.' ('.$title.')'; ?></option>
+	<option value="<?php echo esc_attr($val); ?>" <?php echo ($wp_datepicker_language==$val?'selected="selected"':''); ?>><?php echo esc_html($code.' ('.$title.')'); ?></option>
 <?php
 }
 ?>
@@ -567,7 +581,7 @@ function (date) {
 </div>
 <?php if(!$wpdp_pro): ?>
 <div class="wpdp_go_premium">
-<a href="<?php echo $wpdp_premium_link; ?>" target="_blank"><img src="<?php echo $wpdp_url.'img/'; ?>go-premium.png" /></a>
+<a href="<?php echo esc_url($wpdp_premium_link); ?>" target="_blank" rel="noopener"><img src="<?php echo esc_url($wpdp_url.'img/'); ?>go-premium.png" alt="<?php esc_attr_e('Go Premium', 'wp-datepicker'); ?>" /></a>
 </div>
 <?php endif; ?>
 </div>
@@ -593,7 +607,7 @@ function (date) {
 <ul>
 <?php foreach($addons as $addon=>$details): $name = strtoupper(str_replace('-', ' ', $addon));  ?>
 <li><a href="https://wordpress.org/plugins/<?php echo $addon; ?>/" target="_blank"><img src="https://ps.w.org/<?php echo $addon; ?>/assets/icon-256x256.<?php echo $details['ext']; ?>" /><br />
-<center><?php echo $name; ?></center></a></li>
+<center><?php echo esc_html($name); ?></center></a></li>
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
@@ -728,7 +742,7 @@ function (date) {
 
         <?php if(isset($_GET['t']) && is_numeric($_GET['t'])): ?>
 
-        $('.nav-tab-wrapper .nav-tab:nth-child(<?php echo esc_attr($_GET['t'])+1; ?>)').click();
+        $('.nav-tab-wrapper .nav-tab:nth-child(<?php echo (int)$_GET['t']+1; ?>)').click();
 
         <?php endif; ?>
 

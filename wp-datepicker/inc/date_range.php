@@ -1,7 +1,7 @@
-<?php
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
 	if(array_key_exists('wpdp_range', $_POST)){
 		
-		if (! isset( $_POST['wpdp_daterange_field'] ) || ! wp_verify_nonce( $_POST['wpdp_daterange_field'], 'wpdp_daterange_action' )) {
+		if (! current_user_can( 'manage_options' ) || ! isset( $_POST['wpdp_daterange_field'] ) || ! wp_verify_nonce( $_POST['wpdp_daterange_field'], 'wpdp_daterange_action' )) {
 			print __('Sorry, your nonce did not verify.', 'wp-datepicker'); exit;
 		}else{
 			
@@ -23,7 +23,7 @@
 
 			$datepicker_value = maybe_unserialize($datepicker->option_value);
 			
-			if(array_key_exists('wp_datepicker', $datepicker_value)){
+			if(is_array($datepicker_value) && array_key_exists('wp_datepicker', $datepicker_value)){
 				//pree($datepicker_value);
 				$selectors = $datepicker_value['wp_datepicker'];
 				$selectors_arr = explode(',', $selectors);
@@ -62,7 +62,7 @@
 <select name="wpdp_range[<?php echo $selector_date_range; ?>][target]">
 <?php foreach($all_selectors as $selector_sub => $selector){ $selector_sub_range = 'wpdp-date-range-'.$selector_sub; ?>	
 <?php if($selector_date_range!=$selector_sub_range){ ?>
-	<option value="<?php echo esc_attr($selector_sub_range); ?>" <?php selected($wpdp_range_target==$selector_sub_range); ?>><?php echo $selector; ?></option>
+	<option value="<?php echo esc_attr($selector_sub_range); ?>" <?php selected($wpdp_range_target==$selector_sub_range); ?>><?php echo esc_html($selector); ?></option>
 <?php } ?>    
 <?php } ?>    
 </select>

@@ -3,7 +3,7 @@
 Plugin Name: WP Datepicker
 Plugin URI: http://androidbubble.com/blog/wordpress/plugins/wp-datepicker
 Description: WP Datepicker is a great plugin to implement custom styled jQuery UI datepicker site-wide. You can set background images and manage CSS from your theme.
-Version: 2.1.6
+Version: 2.1.7
 Author: Fahad Mahmood
 Author URI: https://www.androidbubbles.com
 Text Domain: wp-datepicker
@@ -28,7 +28,8 @@ This WordPress Plugin is free software: you can redistribute it and/or modify it
 	$wpdp_premium_link = 'https://shop.androidbubbles.com/product/wp-datepicker-pro';//https://shop.androidbubble.com/products/wordpress-plugin?variant=36439508287643';//
 	
 	$HTTP_HOST = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (string)parse_url(get_option('siteurl'), PHP_URL_HOST);
-	$wpdp_actual_link = $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$HTTP_HOST$_SERVER[REQUEST_URI]";
+	$wpdp_request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '';
+	$wpdp_actual_link = $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://".$HTTP_HOST.$wpdp_request_uri;
 	//$wpdp_actual_link = $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	$wpdp_actual_link = rtrim($wpdp_actual_link, '/');
     $wpdp_actual_link = strtok($wpdp_actual_link, '?');
@@ -55,6 +56,13 @@ This WordPress Plugin is free software: you can redistribute it and/or modify it
 	
 	if($wpdp_pro){
 		include($wpdp_dir.'pro/wp-datepicker-pro.php');
+
+		// Optional pro feature modules, plug and play: present = active, absent = silently skipped.
+		foreach(array('pro/inc/date-rules.php') as $wpdp_pro_module){
+			if(file_exists($wpdp_dir.$wpdp_pro_module)){
+				include_once($wpdp_dir.$wpdp_pro_module);
+			}
+		}
 	}
 	
 	include('inc/functions.php');

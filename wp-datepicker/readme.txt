@@ -2,8 +2,8 @@
 Contributors: fahadmahmood, invoicepress
 Tags: datepicker, jquery-ui, html datepicker, date selection
 Requires at least: 3.0.1
-Tested up to: 6.8
-Stable tag: 2.1.6
+Tested up to: 7.1
+Stable tag: 2.1.7
 Requires PHP: 7.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -49,6 +49,7 @@ http://androidbubble.com/blog/wordpress/plugins/wp-datepicker
 * Codestar
 
 ### Premium Features:
+* Date Rules: disable weekdays, single dates, date ranges and yearly holidays without writing any code
 * Change close text, current text, min-date, max-date
 * Inline position will display calendar beneath the field
 * Change year, month, first day, year range
@@ -182,6 +183,12 @@ It's better to post on support forum but if you need it be fixed on urgent basis
 14. Recommended plugins.
 
 == Changelog ==
+= 2.1.7 =
+* Tested up to WordPress 7.1.
+* Security: capability checks and nonces added to remaining admin actions, saved values are validated before they are used in generated scripts and styles, output escaping improved, debug helpers restricted to administrators.
+* Premium: new "Date Rules" feature to disable weekdays, dates, date ranges and yearly holidays without code.
+* Premium: Android app authentication hardened (unique one-time QR login, proper login key validation).
+* Fix: saving of premium options (inline position, change month/year, button panel and custom colors switch) reviewed and corrected.
 = 2.1.4 =
 * Fix: WordPress sanitization and/or escaping functions before saving user input data to the database and when displaying it on output. [12/11/2024][Thanks to Tiffany T. Customer Support Engineer / wordfence.com | defiant.com + vgo0]
 = 2.1.2 =
@@ -373,6 +380,8 @@ It's better to post on support forum but if you need it be fixed on urgent basis
 * Initial Commit
 
 == Upgrade Notice ==
+= 2.1.7 =
+Security hardening release, tested with WordPress 7.1. Updating is recommended for all users.
 = 2.1.4 =
 Fix: WordPress sanitization and/or escaping functions before saving user input data to the database and when displaying it on output.
 = 2.1.2 =

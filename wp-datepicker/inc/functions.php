@@ -12,7 +12,7 @@
 				$new_input = sanitize_email($new_input);
 			}
 			if(stripos($new_input, 'http') || wp_http_validate_url($new_input)){
-				$new_input = sanitize_url($new_input);
+				$new_input = esc_url_raw($new_input);
 			}			
 		}	
 		return $new_input;
@@ -21,7 +21,7 @@
 	//FOR QUICK DEBUGGING
 	if(!function_exists('pre')){
 	function pre($data){
-			if(isset($_GET['debug'])){
+			if(isset($_GET['debug']) && current_user_can('manage_options')){
 				pree($data);
 			}
 		}	 
@@ -88,8 +88,8 @@
 			array_unshift($links, $settings_link); 
 		}else{
 			 
-			$wpdp_premium_link = '<a href="'.esc_url($wpdp_premium_link).'" title="'.__('Go Premium', 'wp-datepicker').'" target="_blank">'.__('Go Premium', 'wp-datepicker').'</a>'; 
-			array_unshift($links, $settings_link, $wpdp_premium_link); 
+			$wpdp_premium_anchor = '<a href="'.esc_url($wpdp_premium_link).'" title="'.esc_attr__('Go Premium', 'wp-datepicker').'" target="_blank" rel="noopener">'.__('Go Premium', 'wp-datepicker').'</a>'; 
+			array_unshift($links, $settings_link, $wpdp_premium_anchor); 
 		
 		}
 		
@@ -354,7 +354,7 @@
 	add_action('init', 'wpdp_footer_scripts_debug');
 	
 	function wpdp_footer_scripts_debug(){
-		if(isset($_GET['wpdp_footer_scripts_debug'])){
+		if(isset($_GET['wpdp_footer_scripts_debug']) && current_user_can('manage_options')){
 			wpdp_footer_scripts();exit;
 		}
 	}
@@ -447,7 +447,7 @@
 								}
 							}
 								
-							$val = '"'.$val.'"';
+							$val = wp_json_encode((string)$val);
 							
 						break;
 						case 'checkbox':
@@ -494,7 +494,7 @@ function wpdp_refresh_<?php echo $dp_option_id ?>($, force){
 //			$inline = ((''!=wpdp_get('wpdp_inline')) && wpdp_get('wpdp_inline')==1);
 			$inline = (array_key_exists('wpdp_inline', $wpdp_options_db) && $wpdp_options_db['wpdp_inline'] == 1);
 
-			extract($dp_option_value);
+			extract(wpdp_extractable($dp_option_value));
 
 //			pree($dp_option_value);
     //                    pree($options);
@@ -702,21 +702,21 @@ if(typeof wpdp_obj!='undefined'){
 <?php
 	if($wpdp_range_d){
 ?>					
-  					desired_date.setDate(desired_date.getDate()+<?php echo $wpdp_range_d; ?>); 
+  					desired_date.setDate(desired_date.getDate()+<?php echo (int)$wpdp_range_d; ?>); 
 <?php 
 	}
 ?>	
 <?php
 	if($wpdp_range_m){
 ?>					
-  					desired_date.setMonth(desired_date.getMonth()+<?php echo $wpdp_range_m; ?>); 
+  					desired_date.setMonth(desired_date.getMonth()+<?php echo (int)$wpdp_range_m; ?>); 
 <?php 
 	}
 ?>	
 <?php
 	if($wpdp_range_y){
 ?>					
-  					desired_date.setYear(desired_date.getYear()+<?php echo $wpdp_range_y; ?>); 
+  					desired_date.setYear(desired_date.getYear()+<?php echo (int)$wpdp_range_y; ?>); 
 <?php 
 	}
 ?>	
@@ -808,7 +808,7 @@ setTimeout(function(){
 		
 		var expected_stamp = $(this).data('default_stamp');
 		var expected_stamp_date = new Date(expected_stamp*1000);
-		var expected_stamp_str = $.datepicker.formatDate('<?php echo $wpdb_date_format; ?>', expected_stamp_date);		 
+		var expected_stamp_str = $.datepicker.formatDate(<?php echo wp_json_encode((string)$wpdb_date_format); ?>, expected_stamp_date);		 
 	 
 		if(expected_default != undefined && expected_default!=''){ $(this).datepicker().datepicker('setDate', expected_default); }
 		if(expected_stamp != undefined && expected_stamp!=''){ $(this).datepicker().datepicker('setDate', expected_stamp_str); }		
@@ -954,25 +954,46 @@ setTimeout(function(){
 	}
 	}
 	
+	// Decodes the bundled (base64 + serialized) fonts list without allowing object instantiation.
+	function wpdp_decode_fonts($encoded){
+		if(!is_string($encoded) || $encoded===''){ return array(); }
+		$decoded = base64_decode($encoded);
+		if($decoded===false || $decoded===''){ return array(); }
+		$fonts = @unserialize($decoded, array('allowed_classes' => false));
+		return is_array($fonts) ? $fonts : array();
+	}
+
+	// Keeps only the instance setting keys that are meant to become local variables (wp_datepicker*, wpdp_fonts).
+	function wpdp_extractable($data){
+		if(!is_array($data)){ return array(); }
+		$safe = array();
+		foreach($data as $key => $value){
+			if(is_string($key) && (strpos($key, 'wp_datepicker')===0 || $key==='wpdp_fonts')){
+				$safe[$key] = $value;
+			}
+		}
+		return $safe;
+	}
+
 	function wpdp_slashes($str, $s=false){
 		return str_replace(array('"'), "'", stripslashes($str));
 	}
 	
 	function wpdp_free_settings($current_option){
-		global $wpdp_pro, $wpdp_fonts, $wpdp_options, $wpdp_styles, $wpdp_options_data;
+		global $wpdp_pro, $wpdp_fonts, $wpdp_options, $wpdp_styles, $wpdp_options_data, $wpdp_premium_link;
 		//pree($_POST);
 
         $wpdp_options_data_pro = array_key_exists('wpdp_options', $wpdp_options_data) ? $wpdp_options_data['wpdp_options'] : array();
 		
 		if(is_array($wpdp_options_data_pro))
-        extract($wpdp_options_data_pro);
+        extract($wpdp_options_data_pro, EXTR_SKIP);
 
 
 
-        $wpdp_fonts = unserialize(base64_decode($wpdp_fonts));
+        $wpdp_fonts = wpdp_decode_fonts($wpdp_fonts);
 		if(!empty($_POST) && !$wpdp_pro){
 			//pree($_POST);exit;
-			if(isset($_POST['wpdp_options']))
+			if(isset($_POST['wpdp_options']) && current_user_can('manage_options') && isset($_POST['wpdp_nonce_action_field']) && wp_verify_nonce($_POST['wpdp_nonce_action_field'], 'wpdp_nonce_action'))
 			update_option('wpdp_options', sanitize_wpdp_data($_POST['wpdp_options']));
 			
 		}
@@ -998,13 +1019,13 @@ setTimeout(function(){
 						case 'text':
 						?>
                 
-                <input id="<?php echo $item; ?>" type="text" value="<?php echo isset($$item) ? esc_attr($$item) : '';  ?>" name="wpdp[<?php echo esc_attr($current_option); ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="http://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
+                <input id="<?php echo $item; ?>" type="text" value="<?php echo isset($$item) ? esc_attr($$item) : '';  ?>" name="wpdp[<?php echo esc_attr($current_option); ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="https://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" rel="noopener" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
                 <?php
 						break;
 						case 'checkbox':
 						?>
                 
-                <input id="<?php echo $item; ?>" type="checkbox" value="1" <?php echo (isset($$item) && $$item == 1)?'checked':''; ?> name="wpdp[<?php echo esc_attr($current_option); ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="http://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
+                <input id="<?php echo $item; ?>" type="checkbox" value="1" <?php echo (isset($$item) && $$item == 1)?'checked':''; ?> name="wpdp[<?php echo esc_attr($current_option); ?>][wpdp_options][<?php echo $item; ?>]" class="wpdp-useable" data-name="[wpdp_options][<?php echo $item; ?>]" /> <a href="https://api.jqueryui.com/datepicker/#option-<?php echo $item; ?>" target="_blank" rel="noopener" title="<?php _e('Click here for documentation about', 'wp-datepicker'); ?> <?php echo $item; ?>" style="text-decoration:none">?</a>
                 <?php
 						break;						
 					}
@@ -1014,6 +1035,11 @@ setTimeout(function(){
 			}
 		}
     ?>
+    <div class="wpdp_pro_teaser" style="clear:both; margin-top:25px; padding:12px 15px; border:1px dashed #25bcf0; background:#f6fcff; max-width:600px;">
+        <strong><?php _e('Date Rules', 'wp-datepicker'); ?></strong> <span style="background:#25bcf0; color:#fff; font-size:10px; padding:1px 6px; border-radius:3px; vertical-align:middle;">PRO</span><br />
+        <small><?php _e('Disable weekdays, single dates, date ranges and yearly holidays without writing any JavaScript.', 'wp-datepicker'); ?>
+        <a href="<?php echo esc_url($wpdp_premium_link); ?>" target="_blank" rel="noopener"><?php _e('Go Premium', 'wp-datepicker'); ?></a></small>
+    </div>
     </div>
 <?php		
 	}	
@@ -1106,12 +1132,17 @@ setTimeout(function(){
                     'status' => 'false',
             );
 
+            if(!current_user_can('manage_options')){
+
+                wp_send_json($result, 403);
+            }
+
             if(!empty($_POST) && isset($_POST['wpdp_developer_options'])){
 
 
                 if(!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wpdp_nonce_action')){
 
-                    wp_die(__('Sorry, your nonce did not verify.', 'text-domain'));
+                    wp_die(__('Sorry, your nonce did not verify.', 'wp-datepicker'));
                 }else{
 
                     //your code here
@@ -1130,6 +1161,10 @@ setTimeout(function(){
 	add_action('wp_ajax_wpdb_refresh_scripts_ajax', 'wpdb_refresh_scripts_ajax');
 	if(!function_exists('wpdb_refresh_scripts_ajax')){
 		function wpdb_refresh_scripts_ajax(){
+
+			if(!current_user_can('manage_options')){
+				wp_die('', '', array('response' => 403));
+			}
 
 			if(isset($_POST['wpdp_nonce']) && wp_verify_nonce($_POST['wpdp_nonce'], 'wpdp_nonce_action')){
 

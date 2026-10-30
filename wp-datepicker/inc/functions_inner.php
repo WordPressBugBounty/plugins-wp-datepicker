@@ -1,8 +1,94 @@
-<?php
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
 
     global $wpdp_option_name;
 
     $wpdp_option_name ='wp_datepicker_option-';
+
+    // Only options named wp_datepicker_option-{number} are datepicker instances, nothing else may be read/written/deleted through the plugin.
+    if(!function_exists('wpdp_is_valid_instance_name')){
+
+        function wpdp_is_valid_instance_name($option_name){
+
+            return (is_string($option_name) && preg_match('/^wp_datepicker_option-[0-9]+$/', $option_name) === 1);
+
+        }
+    }
+
+    if(!function_exists('wpdp_is_css_color')){
+
+        function wpdp_is_css_color($value){
+
+            $value = trim((string)$value);
+
+            return (preg_match('/^(#?[0-9a-fA-F]{3,8}|[a-zA-Z]{3,30}|(rgb|hsl)a?\(\s*[0-9.%\s,\/-]+\))$/', $value) === 1);
+
+        }
+    }
+
+    // Validates the values of a datepicker instance before it is stored (and therefore before it is printed into generated JS/CSS files).
+    if(!function_exists('wpdp_validate_instance_values')){
+
+        function wpdp_validate_instance_values($data){
+
+            global $wpdp_dir, $wpdp_styles, $wpdp_fonts;
+
+            if(!is_array($data)){ return array(); }
+
+            if(isset($data['wp_datepicker_language']) && is_string($data['wp_datepicker_language']) && strpos($data['wp_datepicker_language'], '|') !== false){
+
+                $lang_parts = explode('|', wpdp_slashes($data['wp_datepicker_language']));
+
+                if(count($lang_parts) != 2 || !preg_match('/^datepicker-[A-Za-z-]+\.js$/', $lang_parts[1]) || !file_exists($wpdp_dir.'js/i18n/'.$lang_parts[1])){
+                    $data['wp_datepicker_language'] = '';
+                }
+            }
+
+            if(isset($data['wpdp_fonts']) && $data['wpdp_fonts'] !== ''){
+
+                $font_ok = false;
+
+                if(is_string($data['wpdp_fonts']) && is_string($wpdp_fonts)){
+
+                    $fonts_list = wpdp_decode_fonts($wpdp_fonts);
+                    $font_wanted = base64_decode($data['wpdp_fonts']);
+
+                    foreach($fonts_list as $font_item){
+                        if(isset($font_item['font-family']) && $font_item['font-family'] === $font_wanted){
+                            $font_ok = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(!$font_ok){ $data['wpdp_fonts'] = ''; }
+            }
+
+            if(isset($data['wpdp_options']) && is_array($data['wpdp_options'])){
+
+                $opts = $data['wpdp_options'];
+
+                if(isset($opts['use_custom_style1']) && $opts['use_custom_style1'] !== ''){
+
+                    $allowed_styles = array_merge(is_array($wpdp_styles) ? $wpdp_styles : array(), array('default', 'custom-colors'));
+
+                    if(!in_array($opts['use_custom_style1'], $allowed_styles, true)){
+                        $opts['use_custom_style1'] = '';
+                    }
+                }
+
+                foreach(array('color1', 'color2', 'color3', 'color4', 'color5') as $color_key){
+
+                    if(isset($opts[$color_key]) && $opts[$color_key] !== '' && !wpdp_is_css_color($opts[$color_key])){
+                        $opts[$color_key] = '';
+                    }
+                }
+
+                $data['wpdp_options'] = apply_filters('wpdp_validate_wpdp_options', $opts);
+            }
+
+            return $data;
+        }
+    }
 
     if(!function_exists('wpdp_new_option_name')){
 
@@ -114,7 +200,7 @@
        function wpdp_get_datepicker_by_id($option_id, $default = false){
 
            global  $wpdb;
-           $result =  $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_id = '" . $option_id . "' ;", OBJECT);
+           $result =  $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}options WHERE option_id = %d", (int)$option_id), OBJECT);
 
            if(!empty($result)){
                return (maybe_unserialize(current($result)->option_value));
@@ -146,7 +232,7 @@
 			$arr = array('msg'=>'');
 			
 			$wpdp_allowed_inputs = array("wp_datepicker_alive_scripts","wp_datepicker","wp_datepicker_language","wp_datepicker_readonly","wp_datepicker_weekends","wp_datepicker_autocomplete","wp_datepicker_beforeShowDay","wp_datepicker_months","wpdp_fonts","wpdp_options");
-			$wpdp_allowed_inputs["wpdp_options"] = array("use_custom_style1","color1","color2","color5","color4","color3","dateFormat","defaultDate","firstDay","closeText","currentText","minDate","maxDate","yearRange","stepMonths");
+			$wpdp_allowed_inputs["wpdp_options"] = apply_filters('wpdp_allowed_wpdp_options', array("use_custom_style1","use_custom_colors","wpdp_inline","changeMonth","changeYear","showButtonPanel","color1","color2","color5","color4","color3","dateFormat","defaultDate","firstDay","closeText","currentText","minDate","maxDate","yearRange","stepMonths"));
 
 			if(isset($_POST['wpdp_add_new_datepicker']) || isset($_POST['wpdp_get_selected_datepicker']) || isset($_POST['wpdp_form_data'])){
 			
@@ -185,6 +271,12 @@
 						}elseif (isset($_POST['wpdp_get_selected_datepicker'])){
 							
 							$option_name = sanitize_wpdp_data($_POST['wpdp_get_selected_datepicker']);
+
+							if(!wpdp_is_valid_instance_name($option_name)){
+								$arr['msg'] = __('Invalid datepicker instance.', 'wp-datepicker');
+								echo json_encode($arr);
+								wp_die();
+							}
 							
 							ob_start();
 							
@@ -243,9 +335,9 @@
 								//echo '"'.implode('","', array_keys($options_data_array['wpdp_options'])).'"';exit;
 								
 								//pree($option_name);exit;
-								if(strlen($option_name) && $valid_option_name){
+								if(strlen($option_name) && $valid_option_name && wpdp_is_valid_instance_name($option_name)){
 									//pree('Done');exit;
-									update_option($option_name, $options_data_array);
+									update_option($option_name, wpdp_validate_instance_values($options_data_array));
 								
 								}
 							
